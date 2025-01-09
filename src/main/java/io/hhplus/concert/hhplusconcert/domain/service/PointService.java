@@ -20,4 +20,10 @@ public class PointService {
         pointRepository.save(updatedPoint);
         return updatedPoint;
     }
+
+    public void usePoint(Long userId, Long amount) {
+        Point point = pointRepository.findPoint(userId);
+        Point updatedPoint = point.use(amount);
+        pointRepository.save(updatedPoint);
+    }
 }

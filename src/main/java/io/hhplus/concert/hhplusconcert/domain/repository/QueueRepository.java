@@ -11,4 +11,5 @@ public interface QueueRepository {
     Queue saveWaitingToken(Queue token);
     Queue findToken(String token);
     boolean existsWaitingToken();
+    void removeToken(String token);
 }

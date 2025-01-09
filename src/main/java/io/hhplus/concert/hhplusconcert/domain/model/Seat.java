@@ -14,7 +14,7 @@ public record Seat(
         int seatNo,
         SeatStatus status,
         LocalDateTime reservationAt,
-        int seatPrice
+        Long seatPrice
 ) {
     public void checkStatus() {
         if (status.equals(SeatStatus.UNAVAILABLE)) {

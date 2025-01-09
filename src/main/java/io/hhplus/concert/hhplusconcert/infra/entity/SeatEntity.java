@@ -34,7 +34,7 @@ public class SeatEntity {
     private LocalDateTime reservationAt;
 
     @Column(nullable = false)
-    private int seatPrice;
+    private Long seatPrice;
 
     public Seat of() {
         return Seat.builder()

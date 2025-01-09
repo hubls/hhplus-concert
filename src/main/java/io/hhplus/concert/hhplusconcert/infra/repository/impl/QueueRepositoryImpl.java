@@ -45,4 +45,10 @@ public class QueueRepositoryImpl implements QueueRepository {
     public boolean existsWaitingToken() {
         return queueJpaRepository.existsByStatus(QueueStatus.WAITING);
     }
+
+    @Override
+    public void removeToken(String token) {
+        // 활성 상태의 특정 토큰 제거
+        queueJpaRepository.deleteByToken(token);
+    }
 }

@@ -36,4 +36,8 @@ public class QueueService {
     public Queue getToken(String token) {
         return queueRepository.findToken(token);
     }
+
+    public void removeToken(String token) {
+        queueRepository.removeToken(token);
+    }
 }
