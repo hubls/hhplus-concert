@@ -12,4 +12,7 @@ public interface ConcertRepository {
     List<ConcertSchedule> findConcertSchedules(Long concertId);
     ConcertSchedule findConcertSchedule(Long concertScheduleId);
     List<Seat> findAvailableSeats(Long concertScheduleId);
+    Seat findSeatById(Long seatId);
+
+    void saveSeat(Seat seat);
 }

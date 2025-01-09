@@ -61,4 +61,17 @@ public class ConcertRepositoryImpl implements ConcertRepository {
                 .toList();
     }
 
+    @Override
+    public Seat findSeatById(Long seatId) {
+        return seatJpaRepository.findById(seatId)
+                .map(SeatEntity::of)
+                .orElseThrow(() -> new CoreException(ErrorType.RESOURCE_NOT_FOUND, "검색한 좌석 ID: " + seatId));
+    }
+
+    @Override
+    public void saveSeat(Seat seat) {
+        seatJpaRepository.save(SeatEntity.from(seat));
+    }
+
+
 }

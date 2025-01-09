@@ -42,4 +42,20 @@ public class ConcertService {
     public List<Seat> getAvailableSeats(Long concertScheduleId) {
         return concertRepository.findAvailableSeats(concertScheduleId);
     }
+
+    public Seat getSeat(Long seatId) {
+        return concertRepository.findSeatById(seatId);
+    }
+
+    public void validateReservation(ConcertSchedule concertSchedule, Seat seat) {
+        // 예약 가능 상태 인지 확인
+        concertSchedule.checkStatus();
+        // 예약 가능 좌석인지 확인
+        seat.checkStatus();
+    }
+
+    public void assignmentSeat(Seat seat) {
+        Seat assignedSeat = seat.assign();
+        concertRepository.saveSeat(assignedSeat);
+    }
 }

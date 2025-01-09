@@ -46,4 +46,15 @@ public class SeatEntity {
                 .seatPrice(this.seatPrice)
                 .build();
     }
+
+    public static SeatEntity from(Seat seat) {
+        return SeatEntity.builder()
+                .id(seat.id())
+                .concertSchedule(ConcertScheduleEntity.builder().id(seat.concertScheduleId()).build())
+                .seatNo(seat.seatNo())
+                .status(seat.status())
+                .reservationAt(seat.reservationAt())
+                .seatPrice(seat.seatPrice())
+                .build();
+    }
 }
