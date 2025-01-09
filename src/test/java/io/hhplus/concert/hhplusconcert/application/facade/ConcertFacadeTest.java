@@ -57,9 +57,9 @@ class ConcertFacadeTest {
         assertThat(schedules.size()).isEqualTo(1);
         assertThat(schedules.get(0).concertId()).isEqualTo(1L);
 
-        assertThat(schedules.get(0).reservationAt()).isEqualTo(LocalDateTime.of(2024, 10, 10, 12, 00, 00));
-        assertThat(schedules.get(0).deadline()).isEqualTo(LocalDateTime.of(2024, 11, 30, 23, 59, 59));
-        assertThat(schedules.get(0).concertAt()).isEqualTo(LocalDateTime.of(2024, 12, 01, 18, 00, 00));
+        assertThat(schedules.get(0).reservationAt()).isEqualTo(LocalDateTime.of(2025, 02, 01, 12, 00, 00));
+        assertThat(schedules.get(0).deadline()).isEqualTo(LocalDateTime.of(2025, 02, 28, 23, 59, 59));
+        assertThat(schedules.get(0).concertAt()).isEqualTo(LocalDateTime.of(2025, 03, 01, 18, 00, 00));
     }
 
     @Test
