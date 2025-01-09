@@ -13,6 +13,10 @@ VALUES (1, '2025-02-01 12:00:00', '2025-02-28 23:59:59', '2025-03-01 18:00:00'),
        (3, '2025-01-01 12:00:00', '2099-01-01 12:00:00', '2099-02-01 12:00:00');
 
 
+INSERT INTO point (amount, last_updated_at, user_id)
+VALUES (0, '2025-01-09 12:00:00', 1);
+
+
 ---- 1번 콘서트 스케줄 ----
 ---- 예약 가능한 좌석 (1~25)
 INSERT INTO concert_seat (concert_schedule_id, seat_no, status, seat_price) VALUES (1, 1, 'AVAILABLE', 10000);
