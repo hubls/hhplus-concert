@@ -20,9 +20,8 @@ public class SeatEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "concert_schedule_id", nullable = false)
-    private ConcertScheduleEntity concertSchedule;
+    @Column(nullable = false)
+    private Long concertScheduleId;
 
     @Column(nullable = false)
     private int seatNo;
@@ -31,6 +30,7 @@ public class SeatEntity {
     @Enumerated(value = EnumType.STRING)
     private SeatStatus status;
 
+    @Column(nullable = false)
     private LocalDateTime reservationAt;
 
     @Column(nullable = false)
@@ -39,7 +39,7 @@ public class SeatEntity {
     public Seat of() {
         return Seat.builder()
                 .id(this.id)
-                .concertScheduleId(this.concertSchedule.getId())
+                .concertScheduleId(this.concertScheduleId)
                 .seatNo(this.seatNo)
                 .status(this.status)
                 .reservationAt(this.reservationAt)
@@ -50,7 +50,7 @@ public class SeatEntity {
     public static SeatEntity from(Seat seat) {
         return SeatEntity.builder()
                 .id(seat.id())
-                .concertSchedule(ConcertScheduleEntity.builder().id(seat.concertScheduleId()).build())
+                .concertScheduleId(seat.concertScheduleId())
                 .seatNo(seat.seatNo())
                 .status(seat.status())
                 .reservationAt(seat.reservationAt())

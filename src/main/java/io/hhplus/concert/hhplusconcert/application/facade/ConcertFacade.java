@@ -7,6 +7,7 @@ import io.hhplus.concert.hhplusconcert.domain.model.Seat;
 import io.hhplus.concert.hhplusconcert.domain.service.ConcertService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

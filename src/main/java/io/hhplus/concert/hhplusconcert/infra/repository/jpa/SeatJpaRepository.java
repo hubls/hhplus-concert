@@ -11,7 +11,7 @@ import java.util.List;
 public interface SeatJpaRepository extends JpaRepository<SeatEntity, Long> {
 //    List<SeatEntity> findAllByConcertScheduleIdAndStatus(Long concertScheduleId, SeatStatus status);
 
-    @Query("SELECT s FROM concert_seat s WHERE s.concertSchedule.id = :concertScheduleId AND s.status = :status")
+    @Query("SELECT s FROM concert_seat s WHERE s.concertScheduleId = :concertScheduleId AND s.status = :status")
     List<SeatEntity> findAllByConcertScheduleIdAndStatus(@Param("concertScheduleId") Long concertScheduleId,
                                                          @Param("status") SeatStatus status);
 }

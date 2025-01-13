@@ -20,9 +20,8 @@ public class ConcertScheduleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name= "concert_id", nullable = false)
-    private ConcertEntity concert;
+    @Column(nullable = false)
+    private Long concertId;
 
     @Column(nullable = false)
     private LocalDateTime reservationAt;
@@ -36,7 +35,7 @@ public class ConcertScheduleEntity {
     public ConcertSchedule of() {
         return ConcertSchedule.builder()
                 .id(id)
-                .concertId(concert.getId())
+                .concertId(concertId)
                 .reservationAt(reservationAt)
                 .deadline(deadline)
                 .concertAt(concertAt)

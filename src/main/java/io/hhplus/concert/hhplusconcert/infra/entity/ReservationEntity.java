@@ -20,35 +20,32 @@ public class ReservationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "concert_id")
-    private ConcertEntity concert;
+    @Column(nullable = false)
+    private Long concertId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "concert_schedule_id")
-    private ConcertScheduleEntity schedule;
+    @Column(nullable = false)
+    private Long concertScheduleId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seat_id")
-    private SeatEntity seat;
+    @Column(nullable = false)
+    private Long seatId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @Column(nullable = false)
+    private Long userId;
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private ReservationStatus status;
 
+    @Column(nullable = false)
     private LocalDateTime reservationAt;
 
     public static ReservationEntity from(Reservation reservation) {
         return ReservationEntity.builder()
                 .id(reservation.id())
-                .concert(ConcertEntity.builder().id(reservation.concertId()).build())
-                .schedule(ConcertScheduleEntity.builder().id(reservation.scheduleId()).build())
-                .seat(SeatEntity.builder().id(reservation.seatId()).build())
-                .user(UserEntity.builder().id(reservation.userId()).build())
+                .concertId(reservation.concertId())
+                .concertScheduleId(reservation.scheduleId())
+                .seatId(reservation.seatId())
+                .userId(reservation.userId())
                 .status(reservation.status())
                 .reservationAt(reservation.reservationAt())
                 .build();
@@ -57,10 +54,10 @@ public class ReservationEntity {
     public Reservation of() {
         return Reservation.builder()
                 .id(id)
-                .concertId(concert.getId())
-                .scheduleId(schedule.getId())
-                .seatId(seat.getId())
-                .userId(user.getId())
+                .concertId(concertId)
+                .scheduleId(concertScheduleId)
+                .seatId(seatId)
+                .userId(userId)
                 .status(status)
                 .reservationAt(reservationAt)
                 .build();

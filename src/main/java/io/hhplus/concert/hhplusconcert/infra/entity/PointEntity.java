@@ -19,9 +19,8 @@ public class PointEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @Column(nullable = false)
+    private Long userId;
 
     @Column(nullable = false)
     private Long amount;
@@ -31,7 +30,7 @@ public class PointEntity {
     public Point of() {
         return Point.builder()
                 .id(id)
-                .userId(user.getId())
+                .userId(userId)
                 .amount(amount)
                 .lastUpdatedAt(lastUpdatedAt)
                 .build();
@@ -40,7 +39,7 @@ public class PointEntity {
     public static PointEntity from(Point point) {
         return PointEntity.builder()
                 .id(point.id())
-                .user(UserEntity.builder().id(point.userId()).build())
+                .userId(point.userId())
                 .amount(point.amount())
                 .lastUpdatedAt(point.lastUpdatedAt())
                 .build();

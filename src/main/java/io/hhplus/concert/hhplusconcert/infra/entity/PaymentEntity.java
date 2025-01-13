@@ -19,13 +19,11 @@ public class PaymentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reservation_id")
-    private ReservationEntity reservation;
+    @Column(nullable = false)
+    private Long reservationId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @Column(nullable = false)
+    private Long userId;
 
     @Column(nullable = false)
     private Long amount;
@@ -35,8 +33,8 @@ public class PaymentEntity {
     public static PaymentEntity from(Payment payment) {
         return PaymentEntity.builder()
                 .id(payment.id())
-                .reservation(ReservationEntity.builder().id(payment.reservationId()).build())
-                .user(UserEntity.builder().id(payment.userId()).build())
+                .reservationId(payment.reservationId())
+                .userId(payment.userId())
                 .amount(payment.amount())
                 .paymentAt(payment.paymentAt())
                 .build();
@@ -45,8 +43,8 @@ public class PaymentEntity {
     public Payment of() {
         return Payment.builder()
                 .id(id)
-                .reservationId(reservation.getId())
-                .userId(user.getId())
+                .reservationId(reservationId)
+                .userId(userId)
                 .amount(amount)
                 .paymentAt(paymentAt)
                 .build();
