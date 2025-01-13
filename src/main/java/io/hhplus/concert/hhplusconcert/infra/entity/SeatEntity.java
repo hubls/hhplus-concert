@@ -30,7 +30,6 @@ public class SeatEntity {
     @Enumerated(value = EnumType.STRING)
     private SeatStatus status;
 
-    @Column(nullable = false)
     private LocalDateTime reservationAt;
 
     @Column(nullable = false)
