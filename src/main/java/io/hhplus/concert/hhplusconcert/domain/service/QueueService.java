@@ -16,14 +16,11 @@ public class QueueService {
     private static final long MAX_ACTIVE_TOKENS = 200;
 
     public Queue issueToken(Long userId) {
-        Queue token;
+        // 황성화 상태 토큰 개수 검색
+        Long activeTokenCount = queueRepository.getActiveTokenCount();
 
-        // 대기열 토큰이 있다면
-        if (queueRepository.existsWaitingToken()) {
-            token = Queue.createWaitingToken(userId);
-        } else {
-            token = Queue.createActiveToken(userId);
-        }
+        // 활성화 상태 토큰 개수에 따라 WAITING_TOKEN 혹은 ACTIVE_TOKEN 생성
+        Queue token = Queue.createToken(userId, activeTokenCount);
 
         // 토큰 저장
         if (token.isWaiting()) {

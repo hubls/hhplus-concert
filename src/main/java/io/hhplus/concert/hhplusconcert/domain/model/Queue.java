@@ -19,31 +19,25 @@ public record Queue(
     private static final Long MAX_ACTIVE_TOKENS = 200L;
     private static final Long FIRST_IN_QUEUE = 0L;
 
-    public static Queue createActiveToken(Long userId) {
+    public static Queue createToken(Long userId, Long activeTokenCount) {
         LocalDateTime now = LocalDateTime.now();
         String userData = userId + now.toString();
         String token = UUID.nameUUIDFromBytes(userData.getBytes()).toString();
 
-        return Queue.builder()
-                .userId(userId)
-                .token(token)
-                .status(QueueStatus.ACTIVE)
-                .createdAt(now)
-                .enteredAt(now)
-                .expiredAt(now.plusMinutes(10))
-                .build();
-    }
-
-    public static Queue createWaitingToken(Long userId) {
-        LocalDateTime now = LocalDateTime.now();
-        String userData = userId + now.toString();
-        String token = UUID.nameUUIDFromBytes(userData.getBytes()).toString();
+        QueueStatus status;
+        if (activeTokenCount < MAX_ACTIVE_TOKENS) {
+            status = QueueStatus.ACTIVE;
+        } else {
+            status = QueueStatus.WAITING;
+        }
 
         return Queue.builder()
                 .userId(userId)
                 .token(token)
-                .status(QueueStatus.WAITING)
+                .status(status)
                 .createdAt(now)
+                .enteredAt((status == QueueStatus.ACTIVE) ? now : null)
+                .expiredAt((status == QueueStatus.ACTIVE) ? now.plusMinutes(10) : null)
                 .build();
     }
 
