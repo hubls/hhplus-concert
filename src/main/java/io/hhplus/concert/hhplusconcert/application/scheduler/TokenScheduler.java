@@ -9,9 +9,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TokenScheduler {
     private final QueueService queueService;
+    private static final int TO_ACTIVE_SCHEDULE_TIME = 30000;
 
-    @Scheduled(fixedDelay = 30000) // 30 초마다 active토큰 조정
+    // WAITING -> ACTIVE 토큰으로 전환
+    @Scheduled(fixedDelay = TO_ACTIVE_SCHEDULE_TIME)
     public void adjustActiveToken() {
+        queueService.updateActiveTokens();
     }
 
 }

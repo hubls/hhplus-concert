@@ -18,6 +18,7 @@ public record Queue(
 ) {
     private static final Long MAX_ACTIVE_TOKENS = 200L;
     private static final Long FIRST_IN_QUEUE = 0L;
+    private static final int EXPIRED_MINUTE = 10;
 
     public static Queue createToken(Long userId, Long activeTokenCount) {
         LocalDateTime now = LocalDateTime.now();
@@ -37,7 +38,7 @@ public record Queue(
                 .status(status)
                 .createdAt(now)
                 .enteredAt((status == QueueStatus.ACTIVE) ? now : null)
-                .expiredAt((status == QueueStatus.ACTIVE) ? now.plusMinutes(10) : null)
+                .expiredAt((status == QueueStatus.ACTIVE) ? now.plusMinutes(EXPIRED_MINUTE) : null)
                 .build();
     }
 
@@ -51,6 +52,19 @@ public record Queue(
                 .token(this.token)
                 .status(QueueStatus.EXPIRED)
                 .expiredAt(LocalDateTime.now())
+                .build();
+    }
+
+    public Queue changeActiveToken() {
+        LocalDateTime now = LocalDateTime.now();
+
+        return Queue.builder()
+                .id(this.id)
+                .userId(this.userId)
+                .token(this.token)
+                .status(QueueStatus.ACTIVE)
+                .enteredAt(now)
+                .expiredAt(now.plusMinutes(EXPIRED_MINUTE))
                 .build();
     }
 }
