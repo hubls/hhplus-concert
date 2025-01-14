@@ -51,4 +51,9 @@ public class QueueRepositoryImpl implements QueueRepository {
         // 활성 상태의 특정 토큰 제거
         queueJpaRepository.deleteByToken(token);
     }
+
+    @Override
+    public boolean hasActiveToken(String token) {
+        return queueJpaRepository.existsByToken(token);
+    }
 }

@@ -2,6 +2,8 @@ package io.hhplus.concert.hhplusconcert.domain.service;
 
 import io.hhplus.concert.hhplusconcert.domain.model.Queue;
 import io.hhplus.concert.hhplusconcert.domain.repository.QueueRepository;
+import io.hhplus.concert.hhplusconcert.support.code.ErrorType;
+import io.hhplus.concert.hhplusconcert.support.exception.CoreException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +41,13 @@ public class QueueService {
 
     public void removeToken(String token) {
         queueRepository.removeToken(token);
+    }
+
+    public void validateToken(String token) {
+        boolean hasToken = queueRepository.hasActiveToken(token);
+
+        if (!hasToken) {
+            throw new CoreException(ErrorType.INTERNAL_ERROR, "유효하지 않은 토큰입니다.");
+        }
     }
 }

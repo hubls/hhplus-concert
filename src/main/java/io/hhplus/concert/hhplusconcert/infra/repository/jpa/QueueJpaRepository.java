@@ -15,5 +15,6 @@ public interface QueueJpaRepository extends JpaRepository<QueueEntity, Long> {
     boolean existsByStatus(QueueStatus status);
     @Transactional
     void deleteByToken(String token);
+    boolean existsByToken(String token);
 
 }
