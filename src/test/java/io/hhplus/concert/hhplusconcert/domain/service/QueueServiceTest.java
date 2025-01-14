@@ -2,6 +2,7 @@ package io.hhplus.concert.hhplusconcert.domain.service;
 
 import io.hhplus.concert.hhplusconcert.domain.model.Queue;
 import io.hhplus.concert.hhplusconcert.domain.repository.QueueRepository;
+import io.hhplus.concert.hhplusconcert.support.type.QueueStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,12 +22,13 @@ class QueueServiceTest {
     private QueueService queueService;
 
     @Test
-    void 정상_활성_토큰_생성() {
+    void 활성_토큰이_200개_미만일_때_활성_토큰_생성() {
         // given
         Long userId = 123L;
-        Queue expectedToken = Queue.createActiveToken(userId);
+        Long activeTokenCount = 199L;
+        Queue expectedToken = Queue.createToken(userId, activeTokenCount);
 
-        when(queueRepository.existsWaitingToken()).thenReturn(false);
+        when(queueRepository.getActiveTokenCount()).thenReturn(activeTokenCount);
         when(queueRepository.saveActiveToken(any(Queue.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
@@ -38,12 +40,13 @@ class QueueServiceTest {
     }
 
     @Test
-    void 정상_대기_토큰_생성() {
+    void 활성_토큰이_200개_이상일_때_대기_토큰_생성() {
         // given
         Long userId = 123L;
-        Queue expectedToken = Queue.createWaitingToken(userId);
+        Long activeTokenCount = 200L;
+        Queue expectedToken = Queue.createToken(userId, activeTokenCount);
 
-        when(queueRepository.existsWaitingToken()).thenReturn(true);
+        when(queueRepository.getActiveTokenCount()).thenReturn(activeTokenCount);
         when(queueRepository.saveWaitingToken(any(Queue.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
@@ -58,7 +61,8 @@ class QueueServiceTest {
     void 대기_중인_토큰_조회() {
         // given
         Long userId = 1L;
-        Queue expectedToken = Queue.createWaitingToken(userId);
+        Long activeTokenCount = 200L;
+        Queue expectedToken = Queue.createToken(userId, activeTokenCount);
 
         when(queueRepository.findToken(expectedToken.token())).thenReturn(expectedToken);
 
@@ -67,5 +71,6 @@ class QueueServiceTest {
 
         // then
         assertThat(actualToken.token()).isEqualTo(expectedToken.token());
+        assertThat(actualToken.status()).isEqualTo(QueueStatus.WAITING);
     }
 }
