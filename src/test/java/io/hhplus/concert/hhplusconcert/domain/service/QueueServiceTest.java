@@ -116,4 +116,48 @@ class QueueServiceTest {
         assertThat(capturedQueue.status()).isEqualTo(QueueStatus.ACTIVE);
     }
 
+    @Test
+    void 시간이지난_ACTIVE_상태토큰을_EXPIRED_상태로_업데이트한다() {
+        // Given
+        // 현재 시간을 기준으로 만료된 토큰과 유효한 토큰을 각각 생성
+        LocalDateTime now = LocalDateTime.now();
+
+        Queue token1 = Queue.builder()
+                .id(1L)
+                .userId(100L)
+                .token("token1")
+                .status(QueueStatus.ACTIVE)
+                .createdAt(now.minusMinutes(30))
+                .enteredAt(now.minusMinutes(20))
+                .expiredAt(now.minusMinutes(10)) // 만료된 토큰
+                .build();
+
+        Queue token2 = Queue.builder()
+                .id(2L)
+                .userId(101L)
+                .token("token2")
+                .status(QueueStatus.ACTIVE)
+                .createdAt(now.minusMinutes(30))
+                .enteredAt(now.minusMinutes(20))
+                .expiredAt(now.plusMinutes(10)) // 아직 유효한 토큰
+                .build();
+
+        // Stub 설정: getOldestActiveTokens 메서드는 두 개의 토큰을 반환
+        when(queueRepository.getOldestActiveTokens(anyLong())).thenReturn(List.of(token1, token2));
+
+        // When
+        // 만료된 토큰 상태를 업데이트하는 서비스 메서드 호출
+        queueService.updateExpiredTokens();
+
+        // Then
+        // updateTokenStatusToActive 메서드가 한 번 호출되었는지 확인하고, 업데이트된 토큰 값 검증
+        ArgumentCaptor<Queue> captor = ArgumentCaptor.forClass(Queue.class);
+        verify(queueRepository, times(1)).updateTokenStatusToActive(captor.capture());
+
+        Queue updatedToken = captor.getValue();
+        // 업데이트된 토큰이 token1인지 확인
+        assertThat(updatedToken.id()).isEqualTo(1L);
+        // 상태가 만료(EXPIRED)로 업데이트되었는지 확인
+        assertThat(updatedToken.status()).isEqualTo(QueueStatus.EXPIRED);
+    }
 }
