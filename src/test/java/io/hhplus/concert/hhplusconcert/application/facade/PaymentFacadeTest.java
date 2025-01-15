@@ -1,20 +1,25 @@
 package io.hhplus.concert.hhplusconcert.application.facade;
 
-import io.hhplus.concert.hhplusconcert.domain.model.Payment;
-import io.hhplus.concert.hhplusconcert.domain.model.Point;
-import io.hhplus.concert.hhplusconcert.domain.model.Queue;
-import io.hhplus.concert.hhplusconcert.domain.model.Reservation;
+import io.hhplus.concert.hhplusconcert.DatabaseCleanUp;
+import io.hhplus.concert.hhplusconcert.domain.model.*;
+import io.hhplus.concert.hhplusconcert.domain.repository.ConcertRepository;
+import io.hhplus.concert.hhplusconcert.domain.repository.PointRepository;
 import io.hhplus.concert.hhplusconcert.domain.repository.ReservationRepository;
+import io.hhplus.concert.hhplusconcert.domain.repository.UserRepository;
 import io.hhplus.concert.hhplusconcert.domain.service.PointService;
 import io.hhplus.concert.hhplusconcert.domain.service.QueueService;
 import io.hhplus.concert.hhplusconcert.support.code.ErrorType;
 import io.hhplus.concert.hhplusconcert.support.exception.CoreException;
 import io.hhplus.concert.hhplusconcert.support.type.ReservationStatus;
+import io.hhplus.concert.hhplusconcert.support.type.SeatStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 
@@ -22,7 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 class PaymentFacadeTest {
     @Autowired
     private PaymentFacade paymentFacade;
@@ -36,16 +42,47 @@ class PaymentFacadeTest {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PointRepository pointRepository;
+
+    @Autowired
+    private ConcertRepository concertRepository;
+
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
+
     private final Long USER_ID = 1L;
     private Reservation reservation;
     private String token;
 
     @BeforeEach
     void setUp() {
+        databaseCleanUp.execute();
+
+        userRepository.save("1234");
+
         Queue queue = queueService.issueToken(USER_ID);
         Long concertId = 1L;
         Long scheduleId = 1L;
         Long seatId = 1L;
+
+        Point point = Point.builder()
+                .amount(0L)
+                .lastUpdatedAt(LocalDateTime.now())
+                .userId(1L)
+                .build();
+        pointRepository.save(point);
+
+        Seat seat = Seat.builder()
+                .concertScheduleId(scheduleId)
+                .seatNo(1)
+                .status(SeatStatus.AVAILABLE)
+                .seatPrice(10000L)
+                .build();
+        concertRepository.saveSeat(seat);
 
         token = queue.token();
 
