@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -63,6 +64,19 @@ public class QueueService {
 
             for (Queue token : tokens) {
                 queueRepository.updateTokenStatusToActive(token.changeActiveToken());
+            }
+        }
+    }
+
+    @Transactional
+    public void updateExpiredTokens() {
+        LocalDateTime now = LocalDateTime.now();
+
+        List<Queue> oldestActiveTokens = queueRepository.getOldestActiveTokens(MAX_ACTIVE_TOKENS);
+
+        for (Queue token : oldestActiveTokens) {
+            if (token.expiredAt().isBefore(now)) {
+                queueRepository.updateTokenStatusToActive(token.expired());
             }
         }
     }

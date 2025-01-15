@@ -39,9 +39,12 @@ public class QueueEntity {
     public Queue toDomain() {
         return Queue.builder()
                 .id(this.id)
-                .userId(userId)
+                .userId(this.userId)
                 .token(this.token)
                 .status(this.status)
+                .createdAt(this.createdAt)
+                .enteredAt(this.enteredAt)
+                .expiredAt(this.expiredAt)
                 .build();
     }
 

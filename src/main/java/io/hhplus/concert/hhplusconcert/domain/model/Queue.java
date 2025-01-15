@@ -17,7 +17,6 @@ public record Queue(
         LocalDateTime expiredAt
 ) {
     private static final Long MAX_ACTIVE_TOKENS = 200L;
-    private static final Long FIRST_IN_QUEUE = 0L;
     private static final int EXPIRED_MINUTE = 10;
 
     public static Queue createToken(Long userId, Long activeTokenCount) {
@@ -48,10 +47,12 @@ public record Queue(
 
     public Queue expired() {
         return Queue.builder()
+                .id(this.id)
                 .userId(this.userId)
                 .token(this.token)
                 .status(QueueStatus.EXPIRED)
-                .expiredAt(LocalDateTime.now())
+                .enteredAt(this.enteredAt)
+                .expiredAt(this.expiredAt)
                 .build();
     }
 

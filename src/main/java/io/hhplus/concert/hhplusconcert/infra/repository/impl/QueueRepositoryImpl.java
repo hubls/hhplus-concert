@@ -74,4 +74,13 @@ public class QueueRepositoryImpl implements QueueRepository {
     public void updateTokenStatusToActive(Queue token) {
         queueJpaRepository.updateTokenStatus(token.id(), token.status(), token.enteredAt(), token.expiredAt());
     }
+
+    @Override
+    public List<Queue> getOldestActiveTokens(long maxActiveCount) {
+        Pageable pageable = PageRequest.of(0, (int) maxActiveCount);
+
+        return queueJpaRepository.findTokensByStatus(QueueStatus.ACTIVE, pageable).stream()
+                .map(QueueEntity::toDomain)
+                .toList();
+    }
 }

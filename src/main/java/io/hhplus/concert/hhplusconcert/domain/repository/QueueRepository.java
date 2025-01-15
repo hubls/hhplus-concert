@@ -17,5 +17,6 @@ public interface QueueRepository {
     boolean hasActiveToken(String token);
     List<Queue> getWaitingTokens(long waitingTokenCount);
     void updateTokenStatusToActive(Queue token);
+    List<Queue> getOldestActiveTokens(long maxActiveCount);
 
 }
