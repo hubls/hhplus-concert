@@ -10,4 +10,5 @@ public interface ReservationRepository {
     Reservation save(Reservation reservation);
     Reservation findById(Long reservationId);
     List<Reservation> findExpiredReservation(ReservationStatus reservationStatus, LocalDateTime expiredTime);
+    List<Reservation> findAll();
 }

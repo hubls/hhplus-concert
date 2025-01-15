@@ -38,5 +38,12 @@ public class ReservationRepositoryImpl implements ReservationRepository {
                 .toList();
     }
 
+    @Override
+    public List<Reservation> findAll() {
+        return reservationJpaRepository.findAll().stream()
+                .map(ReservationEntity::of)
+                .toList();
+    }
+
 
 }
