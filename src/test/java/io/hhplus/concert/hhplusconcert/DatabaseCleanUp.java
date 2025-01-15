@@ -46,4 +46,13 @@ public class DatabaseCleanUp {
             entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
         }
     }
+
+    @Transactional
+    public void execute(String table) {
+        entityManager.flush();
+        // MySQL에서 외래 키 제약 비활성화
+        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 0").executeUpdate();
+        entityManager.createNativeQuery("TRUNCATE TABLE " + table).executeUpdate();
+        entityManager.createNativeQuery("SET FOREIGN_KEY_CHECKS = 1").executeUpdate();
+    }
 }
