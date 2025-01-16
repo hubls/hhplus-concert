@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -63,6 +64,7 @@ class SeatSchedulerTest {
     }
 
     @Test
+    @Transactional
     void 예약후_5분_이상_지났지만_결제되지_않은_경우_좌석을_이용_가능_상태로_변경한다() {
         // when
         seatScheduler.manageAvailableSeats();  // 좌석 상태 변경 처리

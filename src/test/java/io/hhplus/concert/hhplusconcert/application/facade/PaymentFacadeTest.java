@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -99,6 +100,7 @@ class PaymentFacadeTest {
     }
 
     @Test
+    @Transactional
     void 잔액이_충분하다면_결제에_성공한다() {
         // given
         Point point = pointService.getPoint(USER_ID);
@@ -120,6 +122,7 @@ class PaymentFacadeTest {
     }
 
     @Test
+    @Transactional
     void 잔액이_부족할_경우_PAYMENT_FAILED_AMOUNT_에러를_반환한다() {
         // when & then
         // 잔액을 충전하지 않을 경우 잔액은 0이기 때문에 결제에 실패한다.
@@ -129,6 +132,7 @@ class PaymentFacadeTest {
     }
 
     @Test
+    @Transactional
     void 예약자와_결제자_정보가_다를_경우_PAYMENT_DIFFERENT_USER_에러를_반환한다() {
         Long otherUserId = 2L;
         // when & then
@@ -138,6 +142,7 @@ class PaymentFacadeTest {
     }
 
     @Test
+    @Transactional
     void 예약한지_5분이_지났을_경우_PAYMENT_TIMEOUT_에러를_반환한다() {
         Reservation reservation = Reservation.builder()
                 .concertId(1L)
@@ -157,6 +162,7 @@ class PaymentFacadeTest {
     }
 
     @Test
+    @Transactional
     void 이미_결제된_예약건이라면_ALREADY_PAID_에러를_반환한다() {
         Reservation reservation = Reservation.builder()
                 .concertId(1L)

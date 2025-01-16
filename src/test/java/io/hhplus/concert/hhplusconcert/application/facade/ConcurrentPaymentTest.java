@@ -2,10 +2,7 @@ package io.hhplus.concert.hhplusconcert.application.facade;
 
 import io.hhplus.concert.hhplusconcert.DatabaseCleanUp;
 import io.hhplus.concert.hhplusconcert.domain.model.*;
-import io.hhplus.concert.hhplusconcert.domain.repository.ConcertRepository;
-import io.hhplus.concert.hhplusconcert.domain.repository.PointRepository;
-import io.hhplus.concert.hhplusconcert.domain.repository.ReservationRepository;
-import io.hhplus.concert.hhplusconcert.domain.repository.UserRepository;
+import io.hhplus.concert.hhplusconcert.domain.repository.*;
 import io.hhplus.concert.hhplusconcert.domain.service.PointService;
 import io.hhplus.concert.hhplusconcert.domain.service.QueueService;
 import io.hhplus.concert.hhplusconcert.support.type.ReservationStatus;
@@ -54,7 +51,7 @@ public class ConcurrentPaymentTest {
     private ConcertRepository concertRepository;
 
     @Autowired
-    private QueueService queueService;
+    private QueueRepository queueRepository;
 
     private static final long USER_ID = 1;
     private static final long RESERVATION_ID = 1;
@@ -102,8 +99,8 @@ public class ConcurrentPaymentTest {
                 .build();
         concertRepository.saveSeat(seat);
 
-        Queue token = queueService.issueToken(USER_ID);
-
+        Queue token = Queue.createToken(USER_ID, 1L);
+        queueRepository.saveActiveToken(token);
 
         // when
         AtomicInteger successCnt = new AtomicInteger(0);

@@ -136,6 +136,7 @@ class ReservationFacadeTest {
     }
 
     @Test
+    @Transactional
     void 좌석의_상태가_UNAVAILABLE_이라면_SEAT_UNAVAILABLE_에러를_반환한다() {
         // given
         Long userId = 1L;
@@ -179,6 +180,7 @@ class ReservationFacadeTest {
     }
 
     @Test
+    @Transactional
     void 예약_가능한_시간이고_좌석이_예약_가능_상태라면_예약_정보를_생성하고_반환한다() {
         // given
         Long userId = 1L;
