@@ -1,34 +1,59 @@
 package io.hhplus.concert.hhplusconcert.application.facade;
 
+import io.hhplus.concert.hhplusconcert.DatabaseCleanUp;
 import io.hhplus.concert.hhplusconcert.HhplusConcertApplication;
 import io.hhplus.concert.hhplusconcert.domain.model.Point;
 import io.hhplus.concert.hhplusconcert.domain.repository.PointRepository;
+import io.hhplus.concert.hhplusconcert.domain.repository.UserRepository;
 import io.hhplus.concert.hhplusconcert.domain.service.PointService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = HhplusConcertApplication.class)
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles("test")
 class PointFacadeTest {
     @Autowired
     private PointFacade pointFacade;
 
     @Autowired
-    private PointService pointService;
+    private UserRepository userRepository;
 
     @Autowired
     private PointRepository pointRepository;
 
+    @Autowired
+    private DatabaseCleanUp databaseCleanUp;
+
+
+    @BeforeEach
+    void setup() {
+        databaseCleanUp.execute("users");
+        databaseCleanUp.execute("point");
+    }
+
     @Test
-    @Transactional
     void 잔액충전() {
-        // given(data.sql)
+        // given
+        userRepository.save("1234");
+        Point point = Point.builder()
+                .amount(0L)
+                .lastUpdatedAt(LocalDateTime.now())
+                .userId(1L)
+                .build();
+
+        pointRepository.save(point);
+
         Long userId = 1L;
         Long chargeAmount = 5000L;
 
@@ -43,6 +68,15 @@ class PointFacadeTest {
     @Test
     @Transactional
     void 유저의_잔액을_조회한다() {
+        userRepository.save("1234");
+        Point point = Point.builder()
+                .amount(0L)
+                .lastUpdatedAt(LocalDateTime.now())
+                .userId(1L)
+                .build();
+
+        pointRepository.save(point);
+
         Long userId = 1L;
 
         // when

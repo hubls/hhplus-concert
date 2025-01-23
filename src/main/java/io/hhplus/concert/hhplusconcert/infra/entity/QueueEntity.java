@@ -19,9 +19,8 @@ public class QueueEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @Column(nullable = false)
+    private Long userId;
 
     @Column(nullable = false)
     private String token;
@@ -40,15 +39,18 @@ public class QueueEntity {
     public Queue toDomain() {
         return Queue.builder()
                 .id(this.id)
-                .userId(this.user.id)
+                .userId(this.userId)
                 .token(this.token)
                 .status(this.status)
+                .createdAt(this.createdAt)
+                .enteredAt(this.enteredAt)
+                .expiredAt(this.expiredAt)
                 .build();
     }
 
     public static QueueEntity from(Queue queue) {
         return QueueEntity.builder()
-                .user(UserEntity.builder().id(queue.userId()).build())
+                .userId(queue.userId())
                 .token(queue.token())
                 .status(queue.status())
                 .createdAt(queue.createdAt())

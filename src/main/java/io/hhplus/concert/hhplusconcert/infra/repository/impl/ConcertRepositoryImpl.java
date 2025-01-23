@@ -73,5 +73,22 @@ public class ConcertRepositoryImpl implements ConcertRepository {
         seatJpaRepository.save(SeatEntity.from(seat));
     }
 
+    @Override
+    public void saveConcert(Concert concert) {
+        concertJpaRepository.save(ConcertEntity.builder()
+                .title(concert.title())
+                .description(concert.description())
+                .status(concert.status())
+                .build());
+    }
 
+    @Override
+    public void saveConcertSchedule(ConcertSchedule concertSchedule) {
+        concertScheduleJpaRepository.save(ConcertScheduleEntity.builder()
+                .concertId(concertSchedule.concertId())
+                .reservationAt(concertSchedule.reservationAt())
+                .deadline(concertSchedule.deadline())
+                .concertAt(concertSchedule.concertAt())
+                .build());
+    }
 }

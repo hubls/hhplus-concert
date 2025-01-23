@@ -7,6 +7,10 @@ import io.hhplus.concert.hhplusconcert.infra.repository.jpa.QueueJpaRepository;
 import io.hhplus.concert.hhplusconcert.support.type.QueueStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 
 @Repository
@@ -50,5 +54,33 @@ public class QueueRepositoryImpl implements QueueRepository {
     public void removeToken(String token) {
         // 활성 상태의 특정 토큰 제거
         queueJpaRepository.deleteByToken(token);
+    }
+
+    @Override
+    public boolean hasActiveToken(String token) {
+        return queueJpaRepository.existsByToken(token);
+    }
+
+    @Override
+    public List<Queue> getWaitingTokens(long waitingTokenCount) {
+        Pageable pageable = PageRequest.of(0, (int) waitingTokenCount);
+
+        return queueJpaRepository.findTokensByStatus(QueueStatus.WAITING, pageable).stream()
+                .map(QueueEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public void updateTokenStatusToActive(Queue token) {
+        queueJpaRepository.updateTokenStatus(token.id(), token.status(), token.enteredAt(), token.expiredAt());
+    }
+
+    @Override
+    public List<Queue> getOldestActiveTokens(long maxActiveCount) {
+        Pageable pageable = PageRequest.of(0, (int) maxActiveCount);
+
+        return queueJpaRepository.findTokensByStatus(QueueStatus.ACTIVE, pageable).stream()
+                .map(QueueEntity::toDomain)
+                .toList();
     }
 }

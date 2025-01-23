@@ -32,4 +32,14 @@ public record Seat(
                 .seatPrice(this.seatPrice)
                 .build();
     }
+
+    public Seat toAvailable() {
+        return Seat.builder()
+                .id(this.id)
+                .concertScheduleId(this.concertScheduleId)
+                .seatNo(this.seatNo)
+                .status(SeatStatus.AVAILABLE)
+                .seatPrice(this.seatPrice)
+                .build();
+    }
 }

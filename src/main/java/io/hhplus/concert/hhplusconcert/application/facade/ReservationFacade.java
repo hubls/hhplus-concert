@@ -9,6 +9,7 @@ import io.hhplus.concert.hhplusconcert.domain.service.ConcertService;
 import io.hhplus.concert.hhplusconcert.domain.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class ReservationFacade {
     private final ReservationService reservationService;
 
     // 콘서트 좌석 예약
+    @Transactional
     public ReservationResult reservation(ReservationCommand command) {
         // 콘서트 상태 조회
         ConcertSchedule concertSchedule = concertService.getSchedule(command.scheduleId());

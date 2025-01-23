@@ -10,6 +10,7 @@ public enum ErrorType {
     // Business Error
     USER_NOT_FOUND(ErrorCode.NOT_FOUND, "유저를 찾을 수 없습니다.", LogLevel.INFO),
     MISSING_TOKEN(ErrorCode.TOKEN_ERROR, "토큰 값이 존재하지 않습니다.", LogLevel.WARN),
+    TOKEN_INVALID(ErrorCode.TOKEN_ERROR, "토큰 검증에 실패하였습니다.", LogLevel.WARN),
     AVAILABLE_CONCERT_NOT_FOUND(ErrorCode.NOT_FOUND, "예약 가능한 콘서트를 찾을 수 없습니다.", LogLevel.INFO),
     CLIENT_ERROR(ErrorCode.CLIENT_ERROR, "잘못된 요청입니다.", LogLevel.WARN),
     SEAT_UNAVAILABLE(ErrorCode.BUSINESS_ERROR, "예약 가능한 좌석이 아닙니다.", LogLevel.INFO),

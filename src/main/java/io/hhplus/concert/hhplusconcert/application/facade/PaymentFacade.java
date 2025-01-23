@@ -20,6 +20,7 @@ public class PaymentFacade {
     private final ConcertService concertService;
 
     // 결제 진행
+    @Transactional
     public Payment processPayment(String token, Long reservationId, Long userId) {
         // 예약 검증
         Reservation reservation = reservationService.checkReservation(reservationId, userId);

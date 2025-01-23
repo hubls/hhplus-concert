@@ -7,12 +7,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class QueueTest {
 
     @Test
-    void ACTIVE_상태의_토큰_생성() {
+    void 활성토큰이_199개일_때_ACTIVE_상태의_토큰_생성() {
         // given
         Long userId = 1L;
+        Long activeTokenCount = 199L;
 
         // when
-        Queue token = Queue.createActiveToken(userId);
+        Queue token = Queue.createToken(userId, activeTokenCount);
 
         // then
         assertThat(token.userId()).isEqualTo(userId);
@@ -22,12 +23,13 @@ class QueueTest {
     }
 
     @Test
-    void WAITING_상태의_토큰_생성() {
+    void 활성토큰이_199개일_때_WAITING_상태의_토큰_생성() {
         // given
         Long userId = 1L;
+        Long activeTokenCount = 200L;
 
         // when
-        Queue token = Queue.createWaitingToken(userId);
+        Queue token = Queue.createToken(userId, activeTokenCount);
 
         // then
         assertThat(token.userId()).isEqualTo(userId);
