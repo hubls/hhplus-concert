@@ -13,6 +13,6 @@ public class PaymentService {
 
     public Payment createBill(Long reservationId, Long userId, Long amount) {
         Payment payment = Payment.create(reservationId, userId, amount);
-        return payment;
+        return paymentRepository.save(payment);
     }
 }

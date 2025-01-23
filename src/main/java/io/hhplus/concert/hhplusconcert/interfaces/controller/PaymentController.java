@@ -22,7 +22,7 @@ public class PaymentController {
             @RequestHeader("Token") String token,
             @Valid @RequestBody PaymentDto.PaymentRequest request
     ) {
-        Payment payment = paymentFacade.processPayment(token, request.reservationId(), request.userId());
+        Payment payment = paymentFacade.processPayment("userId:" + request.userId(), token, request.reservationId(), request.userId());
         return ok(PaymentDto.PaymentResponse.of(payment));
     }
 }
