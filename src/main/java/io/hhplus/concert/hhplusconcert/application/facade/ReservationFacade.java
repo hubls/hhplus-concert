@@ -7,6 +7,7 @@ import io.hhplus.concert.hhplusconcert.domain.model.Reservation;
 import io.hhplus.concert.hhplusconcert.domain.model.Seat;
 import io.hhplus.concert.hhplusconcert.domain.service.ConcertService;
 import io.hhplus.concert.hhplusconcert.domain.service.ReservationService;
+import io.hhplus.concert.hhplusconcert.support.aop.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +19,8 @@ public class ReservationFacade {
     private final ReservationService reservationService;
 
     // 콘서트 좌석 예약
-    @Transactional
-    public ReservationResult reservation(ReservationCommand command) {
+    @DistributedLock(key = "#lockName")
+    public ReservationResult reservation(String lockName, ReservationCommand command) {
         // 콘서트 상태 조회
         ConcertSchedule concertSchedule = concertService.getSchedule(command.scheduleId());
         Seat seat = concertService.getSeat(command.seatId());
