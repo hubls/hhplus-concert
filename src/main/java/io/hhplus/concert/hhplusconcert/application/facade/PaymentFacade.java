@@ -5,6 +5,7 @@ import io.hhplus.concert.hhplusconcert.domain.model.Point;
 import io.hhplus.concert.hhplusconcert.domain.model.Reservation;
 import io.hhplus.concert.hhplusconcert.domain.model.Seat;
 import io.hhplus.concert.hhplusconcert.domain.service.*;
+import io.hhplus.concert.hhplusconcert.support.aop.DistributedLock;
 import io.hhplus.concert.hhplusconcert.support.type.ReservationStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -20,8 +21,8 @@ public class PaymentFacade {
     private final ConcertService concertService;
 
     // 결제 진행
-    @Transactional
-    public Payment processPayment(String token, Long reservationId, Long userId) {
+    @DistributedLock(key = "#lockName")
+    public Payment processPayment(String lockName, String token, Long reservationId, Long userId) {
         // 예약 검증
         Reservation reservation = reservationService.checkReservation(reservationId, userId);
         Seat seat = concertService.getSeat(reservation.seatId());
