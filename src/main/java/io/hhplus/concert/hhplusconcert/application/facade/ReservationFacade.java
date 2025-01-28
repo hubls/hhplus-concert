@@ -19,7 +19,9 @@ public class ReservationFacade {
     private final ReservationService reservationService;
 
     // 콘서트 좌석 예약
+    // 락획득(파사드) -> 트랜잭션 시작 -> 트랜잭션 커밋 -> 락해제(파사드)
     @DistributedLock(key = "#lockName")
+    @Transactional
     public ReservationResult reservation(String lockName, ReservationCommand command) {
         // 콘서트 상태 조회
         ConcertSchedule concertSchedule = concertService.getSchedule(command.scheduleId());

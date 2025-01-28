@@ -22,6 +22,7 @@ public class PaymentFacade {
 
     // 결제 진행
     @DistributedLock(key = "#lockName")
+    @Transactional
     public Payment processPayment(String lockName, String token, Long reservationId, Long userId) {
         // 예약 검증
         Reservation reservation = reservationService.checkReservation(reservationId, userId);
