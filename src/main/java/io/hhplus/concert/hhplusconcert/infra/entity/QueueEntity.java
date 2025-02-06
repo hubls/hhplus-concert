@@ -36,26 +36,4 @@ public class QueueEntity {
 
     private LocalDateTime expiredAt;
 
-    public Queue toDomain() {
-        return Queue.builder()
-                .id(this.id)
-                .userId(this.userId)
-                .token(this.token)
-                .status(this.status)
-                .createdAt(this.createdAt)
-                .enteredAt(this.enteredAt)
-                .expiredAt(this.expiredAt)
-                .build();
-    }
-
-    public static QueueEntity from(Queue queue) {
-        return QueueEntity.builder()
-                .userId(queue.userId())
-                .token(queue.token())
-                .status(queue.status())
-                .createdAt(queue.createdAt())
-                .enteredAt(queue.enteredAt())
-                .expiredAt(queue.expiredAt())
-                .build();
-    }
 }

@@ -21,6 +21,7 @@ public class QueueDto {
             return QueueResponse.builder()
                     .token(token.token())
                     .status(token.status())
+                    .rank(token.rank())
                     .build();
         }
     }

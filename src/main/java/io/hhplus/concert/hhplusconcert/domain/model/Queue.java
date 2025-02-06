@@ -12,60 +12,28 @@ public record Queue(
         Long userId,
         String token,
         QueueStatus status,
-        LocalDateTime createdAt,
-        LocalDateTime enteredAt,
-        LocalDateTime expiredAt
+        Long rank
 ) {
-    private static final Long MAX_ACTIVE_TOKENS = 200L;
-    private static final int EXPIRED_MINUTE = 10;
+    private static final Long MAX_ACTIVE_TOKENS = 5L;
 
-    public static Queue createToken(Long userId, Long activeTokenCount) {
+    public static Queue createToken(Long userId, Long activeTokenCount, Long rank) {
+        // 활성 토큰이 MAX_ACTIVE_TOKENS개 미만이고, 대기 순번이 0이면 `ACTIVE`
+        // 활성 토큰이 MAX_ACTIVE_TOKENS개 이상이거나, 대기 순번이 1이상이면 `WAITING`
+        QueueStatus status = (rank == 0 && activeTokenCount < MAX_ACTIVE_TOKENS) ? QueueStatus.ACTIVE : QueueStatus.WAITING;
+
         LocalDateTime now = LocalDateTime.now();
         String userData = userId + now.toString();
         String token = UUID.nameUUIDFromBytes(userData.getBytes()).toString();
-
-        QueueStatus status;
-        if (activeTokenCount < MAX_ACTIVE_TOKENS) {
-            status = QueueStatus.ACTIVE;
-        } else {
-            status = QueueStatus.WAITING;
-        }
 
         return Queue.builder()
                 .userId(userId)
                 .token(token)
                 .status(status)
-                .createdAt(now)
-                .enteredAt((status == QueueStatus.ACTIVE) ? now : null)
-                .expiredAt((status == QueueStatus.ACTIVE) ? now.plusMinutes(EXPIRED_MINUTE) : null)
+                .rank((status == QueueStatus.WAITING) ? rank + 1 : 0)
                 .build();
     }
 
     public boolean isWaiting() {
         return status.equals(QueueStatus.WAITING);
-    }
-
-    public Queue expired() {
-        return Queue.builder()
-                .id(this.id)
-                .userId(this.userId)
-                .token(this.token)
-                .status(QueueStatus.EXPIRED)
-                .enteredAt(this.enteredAt)
-                .expiredAt(this.expiredAt)
-                .build();
-    }
-
-    public Queue changeActiveToken() {
-        LocalDateTime now = LocalDateTime.now();
-
-        return Queue.builder()
-                .id(this.id)
-                .userId(this.userId)
-                .token(this.token)
-                .status(QueueStatus.ACTIVE)
-                .enteredAt(now)
-                .expiredAt(now.plusMinutes(EXPIRED_MINUTE))
-                .build();
     }
 }

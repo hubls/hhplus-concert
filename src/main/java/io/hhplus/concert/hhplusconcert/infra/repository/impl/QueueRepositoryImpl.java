@@ -3,84 +3,90 @@ package io.hhplus.concert.hhplusconcert.infra.repository.impl;
 import io.hhplus.concert.hhplusconcert.domain.model.Queue;
 import io.hhplus.concert.hhplusconcert.domain.repository.QueueRepository;
 import io.hhplus.concert.hhplusconcert.infra.entity.QueueEntity;
+import io.hhplus.concert.hhplusconcert.infra.repository.RedisRepository;
 import io.hhplus.concert.hhplusconcert.infra.repository.jpa.QueueJpaRepository;
+import io.hhplus.concert.hhplusconcert.support.code.ErrorType;
+import io.hhplus.concert.hhplusconcert.support.exception.CoreException;
 import io.hhplus.concert.hhplusconcert.support.type.QueueStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 
 
 @Repository
 @RequiredArgsConstructor
 public class QueueRepositoryImpl implements QueueRepository {
-
-    private final QueueJpaRepository queueJpaRepository;
+    private final RedisRepository redisRepository;
+    private static final String ACTIVE_TOKEN_PREFIX = "activeToken";
+    private static final String WAITING_TOKEN_PREFIX = "waitingToken";
+    private static final Duration TOKEN_TTL = Duration.ofMinutes(10);
 
     @Override
     public Long getActiveTokenCount() {
-        return queueJpaRepository.countActiveTokenByStatus(QueueStatus.ACTIVE);
+        return redisRepository.getSize(ACTIVE_TOKEN_PREFIX);
     }
 
     @Override
     public Long getWaitingTokenCount() {
-        return queueJpaRepository.countWaitingTokenByStatus(QueueStatus.WAITING);
+        return redisRepository.getSortedSetSize(WAITING_TOKEN_PREFIX);
     }
 
     @Override
-    public Queue saveActiveToken(Queue token) {
-        return queueJpaRepository.save(QueueEntity.from(token)).toDomain();
+    public void saveActiveToken(String token) {
+        redisRepository.put(ACTIVE_TOKEN_PREFIX + ":" + token, token, TOKEN_TTL);
     }
 
     @Override
-    public Queue saveWaitingToken(Queue token) {
-        return queueJpaRepository.save(QueueEntity.from(token)).toDomain();
+    public void saveWaitingToken(String token) {
+        redisRepository.addSortedSet(WAITING_TOKEN_PREFIX, token, System.currentTimeMillis());
     }
 
     @Override
     public Queue findToken(String token) {
         // 활성 토큰 유무 확인
-        return queueJpaRepository.findByToken(token).toDomain();
-    }
+        Object activeToken = redisRepository.get(ACTIVE_TOKEN_PREFIX + ":" + token);
+        if (activeToken != null) {
+            return Queue.builder().token(token).status(QueueStatus.ACTIVE).build();
+        }
 
-    @Override
-    public boolean existsWaitingToken() {
-        return queueJpaRepository.existsByStatus(QueueStatus.WAITING);
+        // 대기열에 있는지 확인
+        Long waitingRank = redisRepository.getSortedSetRank(WAITING_TOKEN_PREFIX, token);
+        if (waitingRank != null) {
+            return Queue.builder().token(token).status(QueueStatus.WAITING).rank(waitingRank + 1).build();
+        }
+
+        // 활성 / 대기 둘 다 없는데 상태 조회했으므로 에러 반환
+        throw new CoreException(ErrorType.RESOURCE_NOT_FOUND, "토큰: " + token + " 은 존재하지 않습니다.");
     }
 
     @Override
     public void removeToken(String token) {
         // 활성 상태의 특정 토큰 제거
-        queueJpaRepository.deleteByToken(token);
+        redisRepository.remove(ACTIVE_TOKEN_PREFIX + ":" + token);
     }
 
     @Override
     public boolean hasActiveToken(String token) {
-        return queueJpaRepository.existsByToken(token);
+        return redisRepository.keyExists(token);
     }
 
     @Override
-    public List<Queue> getWaitingTokens(long waitingTokenCount) {
-        Pageable pageable = PageRequest.of(0, (int) waitingTokenCount);
+    public List<String> getWaitingTokens(long waitingTokenCount) {
+        Set<Object> tokens = redisRepository.getSortedSetRange(WAITING_TOKEN_PREFIX, 0, waitingTokenCount - 1);
 
-        return queueJpaRepository.findTokensByStatus(QueueStatus.WAITING, pageable).stream()
-                .map(QueueEntity::toDomain)
-                .toList();
+        if (tokens != null && !tokens.isEmpty()) {
+            return tokens.stream()
+                    .map(Object::toString)
+                    .toList();
+        }
+        return List.of();
     }
 
     @Override
-    public void updateTokenStatusToActive(Queue token) {
-        queueJpaRepository.updateTokenStatus(token.id(), token.status(), token.enteredAt(), token.expiredAt());
-    }
-
-    @Override
-    public List<Queue> getOldestActiveTokens(long maxActiveCount) {
-        Pageable pageable = PageRequest.of(0, (int) maxActiveCount);
-
-        return queueJpaRepository.findTokensByStatus(QueueStatus.ACTIVE, pageable).stream()
-                .map(QueueEntity::toDomain)
-                .toList();
+    public void removeWaitingTokens(List<String> tokens) {
+        redisRepository.removeSortedSetMembers(WAITING_TOKEN_PREFIX, tokens);
     }
 }
