@@ -9,14 +9,11 @@ import java.util.List;
 public interface QueueRepository {
     Long getActiveTokenCount();
     Long getWaitingTokenCount();
-    Queue saveActiveToken(Queue token);
-    Queue saveWaitingToken(Queue token);
+    void saveActiveToken(String token);
+    void saveWaitingToken(String token);
     Queue findToken(String token);
-    boolean existsWaitingToken();
     void removeToken(String token);
     boolean hasActiveToken(String token);
-    List<Queue> getWaitingTokens(long waitingTokenCount);
-    void updateTokenStatusToActive(Queue token);
-    List<Queue> getOldestActiveTokens(long maxActiveCount);
-
+    List<String> getWaitingTokens(long waitingTokenCount);
+    void removeWaitingTokens(List<String> tokens);
 }

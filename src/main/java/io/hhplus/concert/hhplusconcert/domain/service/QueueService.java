@@ -20,17 +20,19 @@ public class QueueService {
     private static final long MAX_ACTIVE_TOKENS = 200;
 
     public Queue issueToken(Long userId) {
-        // 황성화 상태 토큰 개수 검색
+        // 활성화 상태 토큰 개수 검색
         Long activeTokenCount = queueRepository.getActiveTokenCount();
+        // 대기 순번 조회
+        Long rank = queueRepository.getWaitingTokenCount();
 
-        // 활성화 상태 토큰 개수에 따라 WAITING_TOKEN 혹은 ACTIVE_TOKEN 생성
-        Queue token = Queue.createToken(userId, activeTokenCount);
+        // 활성화/대기 토큰 개수에 따라 WAITING_TOKEN 혹은 ACTIVE_TOKEN 생성
+        Queue token = Queue.createToken(userId, activeTokenCount, rank);
 
         // 토큰 저장
         if (token.isWaiting()) {
-            token = queueRepository.saveWaitingToken(token);
+            queueRepository.saveWaitingToken(token.token());
         } else {
-            token = queueRepository.saveActiveToken(token);
+            queueRepository.saveActiveToken(token.token());
         }
 
         return token;
@@ -52,7 +54,6 @@ public class QueueService {
         }
     }
 
-    @Transactional
     public void updateActiveTokens() {
         long activeTokenCount = queueRepository.getActiveTokenCount();
 
@@ -60,23 +61,13 @@ public class QueueService {
             long neededTokens = MAX_ACTIVE_TOKENS - activeTokenCount;
 
             // 필요한 수(최대 활성 가능 개수만큼 대상 데이터 조회
-            List<Queue> tokens = queueRepository.getWaitingTokens(neededTokens);
+            List<String> waitingTokens = queueRepository.getWaitingTokens(neededTokens);
 
-            for (Queue token : tokens) {
-                queueRepository.updateTokenStatusToActive(token.changeActiveToken());
-            }
-        }
-    }
-
-    @Transactional
-    public void updateExpiredTokens() {
-        LocalDateTime now = LocalDateTime.now();
-
-        List<Queue> oldestActiveTokens = queueRepository.getOldestActiveTokens(MAX_ACTIVE_TOKENS);
-
-        for (Queue token : oldestActiveTokens) {
-            if (token.expiredAt().isBefore(now)) {
-                queueRepository.updateTokenStatusToActive(token.expired());
+            if (!waitingTokens.isEmpty()) {
+                // 대기열 상태에서 삭제
+                queueRepository.removeWaitingTokens(waitingTokens);
+                // 활성화 토큰으로 전환
+                waitingTokens.forEach(queueRepository::saveActiveToken);
             }
         }
     }

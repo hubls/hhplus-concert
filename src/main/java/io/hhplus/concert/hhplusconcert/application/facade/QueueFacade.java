@@ -15,7 +15,6 @@ public class QueueFacade {
     private final QueueService queueService;
 
     // 토큰 발급
-    @Transactional
     public Queue issueToken(Long userId) {
         userService.validateUser(userId);
 
@@ -23,7 +22,6 @@ public class QueueFacade {
     }
 
     // 대기열 상태 조회
-    @Transactional(readOnly = true)
     public Queue checkStatus(String token, Long userId) {
         userService.validateUser(userId);
 
