@@ -1,0 +1,10 @@
+### 콘서트 목록 조회
+GET localhost:8080/api/v1/concerts
+
+
+### 예약 가능한 콘서트 스케줄 조회
+GET localhost:8080/api/v1/concerts/1/schedules
+
+
+### 예약 가능한 좌석 조회
+GET localhost:8080/api/v1/concerts/1/schedules/1/seats

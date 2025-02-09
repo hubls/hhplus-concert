@@ -16,7 +16,9 @@ import static org.springframework.http.ResponseEntity.ok;
 public class PointController {
     private final PointFacade pointFacade;
 
-    // 잔액 조회
+    /**
+     * 잔액 조회
+     */
     @GetMapping("/users/{userId}/point")
     public ResponseEntity<PointDto.PointResponse> getPoint (
             @PathVariable Long userId
@@ -25,7 +27,9 @@ public class PointController {
        return ok(PointDto.PointResponse.of(point));
     }
 
-    // 잔액 충전
+    /**
+     * 잔액 충전
+     */
     @PatchMapping("/users/{userId}/point")
     public ResponseEntity<PointDto.PointResponse> chargePoint(
             @PathVariable Long userId,
