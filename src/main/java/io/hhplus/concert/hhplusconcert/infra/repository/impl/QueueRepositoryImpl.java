@@ -70,7 +70,7 @@ public class QueueRepositoryImpl implements QueueRepository {
 
     @Override
     public boolean hasActiveToken(String token) {
-        return redisRepository.keyExists(token);
+        return redisRepository.keyExists(ACTIVE_TOKEN_PREFIX + ":" + token);
     }
 
     @Override
