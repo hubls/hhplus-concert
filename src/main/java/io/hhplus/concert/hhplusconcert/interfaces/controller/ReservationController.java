@@ -6,10 +6,7 @@ import io.hhplus.concert.hhplusconcert.interfaces.dto.ReservationDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -24,7 +21,7 @@ public class ReservationController {
     @PostMapping
     public ResponseEntity<ReservationDto.ReservationResponse> createReservation(
             @RequestHeader("Token") String token,
-            @Valid @RequestHeader ReservationDto.ReservationRequest request
+            @Valid @RequestBody ReservationDto.ReservationRequest request
     ) {
         ReservationResult reservation = reservationFacade.reservation("RESERVATION:" + request.seatId(), request.toCommand());
         return ok(ReservationDto.ReservationResponse.of(reservation));
