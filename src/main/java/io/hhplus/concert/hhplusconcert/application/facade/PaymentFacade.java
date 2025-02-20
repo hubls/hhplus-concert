@@ -19,6 +19,7 @@ public class PaymentFacade {
     private final PaymentService paymentService;
     private final PointService pointService;
     private final ConcertService concertService;
+    private final PaymentEventService paymentEventService;
 
     // 결제 진행
     @DistributedLock(key = "#lockName")
@@ -37,6 +38,9 @@ public class PaymentFacade {
         queueService.removeToken(token);
         // 결제 내역을 생성한다.
         Payment bill = paymentService.createBill(updatedReservation.id(), userId, seat.seatPrice());
+
+        // 이벤트를 발행한다.
+        paymentEventService.publishEvent(bill);
 
         return bill;
     }
