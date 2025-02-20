@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 @RequiredArgsConstructor
 public class OutboxRepositoryImpl implements OutboxRepository {
@@ -26,5 +28,12 @@ public class OutboxRepositoryImpl implements OutboxRepository {
     public void updateStatus(OutboxEvent event, OutboxStatus status) {
         OutboxEntity outboxEntity = outboxJpaRepository.findByUuid(event.getUuid());
         outboxEntity.changeStatus(status);
+    }
+
+    @Override
+    public List<OutboxEvent> findByStatus(OutboxStatus status) {
+        return outboxJpaRepository.findByStatus(status).stream()
+                .map(OutboxEntity::of)
+                .toList();
     }
 }

@@ -75,6 +75,7 @@ public class OutboxEntity {
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .status(this.status)
+                .uuid(this.uuid)
                 .build();
     }
 
