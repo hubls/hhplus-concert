@@ -24,4 +24,19 @@ public class PaymentEventListener {
         log.info("readyHandle: {}", paymentEvent);
         outboxRepository.save(paymentEvent);
     }
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void sendMessage(PaymentEvent paymentEvent) {
+        try {
+            // Kafka 메시지를 전송합니다.
+            messageProducer.send(paymentEvent);
+            log.info("Send Event to Kafka: topic = {}, payload = {}", paymentEvent.getTopic(), paymentEvent.getPayload());
+
+            // Outbox 이벤트 PUBLISHED 상태로 변경합니다.
+            outboxRepository.updateStatus(paymentEvent, OutboxStatus.PUBLISHED);
+        } catch (Exception e) {
+            // exception: 예외 발생 시 Outbox 이벤트를 FAILED 상태로 기록합니다.
+            outboxRepository.updateStatus(paymentEvent, OutboxStatus.FAILED);
+        }
+    }
 }
