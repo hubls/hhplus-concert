@@ -1,0 +1,22 @@
+### 콘서트 좌석 예약
+
+POST localhost:8080/api/v1/reservations
+Content-Type: application/json
+Token: 49968117-7c77-390c-99a0-3fc68f4b127e
+
+{
+  "userId": 1,
+  "concertId": 1,
+  "scheduleId": 1,
+  "seatId": 1
+}
+
+### 콘서트 결제
+POST localhost:8080/api/v1/payments
+Content-Type: application/json
+Token: 49968117-7c77-390c-99a0-3fc68f4b127e
+
+{
+  "userId": 1,
+  "reservationId": 1
+}
