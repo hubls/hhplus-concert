@@ -14,7 +14,7 @@ public record Queue(
         QueueStatus status,
         Long rank
 ) {
-    private static final Long MAX_ACTIVE_TOKENS = 5L;
+    private static final Long MAX_ACTIVE_TOKENS = 200L;
 
     public static Queue createToken(Long userId, Long activeTokenCount, Long rank) {
         // 활성 토큰이 MAX_ACTIVE_TOKENS개 미만이고, 대기 순번이 0이면 `ACTIVE`
